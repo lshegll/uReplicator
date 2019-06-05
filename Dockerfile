@@ -38,4 +38,4 @@ WORKDIR /uReplicator/bin
 RUN chmod +x /uReplicator/bin/entrypoint.sh && \
     chmod +x /uReplicator/bin/*.sh
 
-ENTRYPOINT [ "entrypoint.sh" ]
+ENTRYPOINT [ "./entrypoint.sh" ]
