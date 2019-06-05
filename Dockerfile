@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-FROM maven:3.5-jdk-8
+FROM maven:3.5-jdk-8 as builder
 
 RUN apt-get update && \
 apt-get install -y netcat
@@ -24,9 +24,18 @@ COPY . /usr/src/app
 WORKDIR /usr/src/app
 
 RUN mvn clean package -DskipTests
-RUN chmod +x /usr/src/app/bin/pkg/*.sh
 
-COPY docker-entrypoint.sh /docker-entrypoint.sh
+FROM openjdk:8-jre-alpine
 
-ENTRYPOINT [ "/docker-entrypoint.sh" ]
-CMD [ "controller" ]
+RUN apk --update add bash libstdc++ bind-tools && \
+    rm -rf /tmp/* /var/cache/apk/*
+
+WORKDIR /uReplicator
+
+COPY --from=builder /usr/src/app/uReplicator-Distribution/target/uReplicator-Distribution-pkg .
+COPY entrypoint.sh /uReplicator/bin/entrypoint.sh
+
+RUN chmod +x /uReplicator/bin/entrypoint.sh && \
+    chmod +x /uReplicator/bin/*.sh
+
+ENTRYPOINT [ "/uReplicator/bin/entrypoint.sh" ]
