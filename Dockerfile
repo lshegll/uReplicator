@@ -30,12 +30,12 @@ FROM openjdk:8-jre-alpine
 RUN apk --update add bash libstdc++ bind-tools && \
     rm -rf /tmp/* /var/cache/apk/*
 
-WORKDIR /uReplicator
-
-COPY --from=builder /usr/src/app/uReplicator-Distribution/target/uReplicator-Distribution-pkg .
+COPY --from=builder /usr/src/app/uReplicator-Distribution/target/uReplicator-Distribution-pkg /uReplicator
 COPY entrypoint.sh /uReplicator/bin/entrypoint.sh
+
+WORKDIR /uReplicator/bin
 
 RUN chmod +x /uReplicator/bin/entrypoint.sh && \
     chmod +x /uReplicator/bin/*.sh
 
-ENTRYPOINT [ "/uReplicator/bin/entrypoint.sh" ]
+ENTRYPOINT [ "entrypoint.sh" ]
